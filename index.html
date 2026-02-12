@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Блиц-игра 💌</title>
+  <style>
+    :root { --bg:#0b0f17; --card:#121a29; --muted:#8ea0b7; --text:#eaf1ff; --accent:#ff4d7d; --line:#24314a; }
+    *{ box-sizing:border-box; }
+    body{
+      margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Arial,sans-serif;
+      background: radial-gradient(1200px 700px at 20% 0%, #1a1f3a 0%, var(--bg) 55%) fixed;
+      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+    }
+    .app{ width:min(720px,100%); }
+    .top{ display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:14px; }
+    .brand{ display:flex; gap:10px; align-items:center; }
+    .heart{
+      width:36px; height:36px; border-radius:12px;
+      background: linear-gradient(135deg, #ff4d7d, #ffb86b);
+      display:grid; place-items:center; box-shadow:0 10px 30px rgba(255,77,125,.25);
+      font-size:18px;
+    }
+    .title{ font-weight:800; letter-spacing:.2px; }
+    .subtitle{ color:var(--muted); font-size:13px; margin-top:2px; }
+    .pill{
+      border:1px solid var(--line); background: rgba(255,255,255,.04);
+      padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted);
+    }
+    .card{
+      background: rgba(18,26,41,.88);
+      border:1px solid rgba(36,49,74,.9);
+      border-radius:20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.35);
+      overflow:hidden;
+    }
+    .progressWrap{ padding:14px 18px 0 18px; }
+    .progressBar{
+      height:10px; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid rgba(36,49,74,.8);
+      overflow:hidden;
+    }
+    .progressFill{
+      height:100%; width:0%;
+      background: linear-gradient(90deg, var(--accent), #ffb86b);
+      border-radius:999px;
+      transition: width .35s ease;
+    }
+    .qMeta{
+      display:flex; gap:10px; align-items:center; justify-content:space-between; margin:14px 0 6px;
+      color:var(--muted); font-size:12px;
+    }
+    .cardInner{ padding:18px; }
+    .question{ font-size:18px; font-weight:800; line-height:1.25; margin:0 0 12px; }
+    .answers{ display:grid; gap:10px; }
+    button.choice{
+      width:100%; text-align:left;
+      padding:12px 12px;
+      border-radius:14px;
+      background: rgba(255,255,255,.04);
+      border:1px solid rgba(36,49,74,.9);
+      color:var(--text);
+      font-size:14px;
+      cursor:pointer;
+      transition: transform .06s ease, background .2s ease, border-color .2s ease;
+    }
+    button.choice:hover{ background: rgba(255,255,255,.07); }
+    button.choice:active{ transform: translateY(1px); }
+    .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+    .btn{
+      border:1px solid rgba(36,49,74,.9);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:700; font-size:13px;
+      transition: background .2s ease, transform .06s ease;
+    }
+    .btn:hover{ background: rgba(255,255,255,.07); }
+    .btn:active{ transform: translateY(1px); }
+    .btnDanger{ border-color: rgba(255,77,125,.45); color: #ff9ab2; }
+    .btnPrimary{
+      background: linear-gradient(135deg, #ff4d7d, #ffb86b);
+      border:0;
+      color:#1a0d12;
+      box-shadow: 0 16px 40px rgba(255,77,125,.25);
+    }
+    .hint{ color:var(--muted); font-size:12px; line-height:1.4; margin:10px 0 0; }
+    .hidden{ display:none !important; }
+
+    /* Finish / envelope */
+    .finish{
+      padding:18px;
+    }
+    .finishTitle{ font-size:18px; font-weight:900; margin:0 0 8px; }
+    textarea{
+      width:100%; min-height:90px; resize:vertical;
+      border-radius:14px; padding:10px 12px;
+      border:1px solid rgba(36,49,74,.9);
+      background: rgba(255,255,255,.03); color:var(--text);
+      outline:none;
+    }
+    .envList{ margin:12px 0 0; display:grid; gap:10px; }
+    .item{
+      border:1px dashed rgba(142,160,183,.35);
+      background: rgba(255,255,255,.03);
+      border-radius:16px;
+      padding:10px 12px;
+    }
+    .itemQ{ font-size:13px; font-weight:800; margin:0 0 4px; }
+    .itemA{ font-size:13px; color:var(--muted); margin:0; }
+    .small{ font-size:12px; color:var(--muted); }
+    .toast{
+      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
+      background: rgba(18,26,41,.95); border:1px solid rgba(36,49,74,.9); color:var(--text);
+      padding:10px 12px; border-radius:14px; font-size:13px; display:none;
+      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+    }
+    .tgTip{
+      margin-top:10px;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(36,49,74,.9);
+      background: rgba(0,0,0,.18);
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.45;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="top">
+      <div class="brand">
+        <div class="heart">💌</div>
+        <div>
+          <div class="title">Блиц-игра на 14 февраля</div>
+          <div class="subtitle">Выбирай варианты — конверт появится в конце</div>
+        </div>
+      </div>
+      <div class="pill" id="modePill">карточки</div>
+    </div>
+
+    <div class="card" role="application" aria-label="Valentine quiz">
+      <div class="progressWrap">
+        <div class="progressBar" aria-hidden="true"><div class="progressFill" id="progressFill"></div></div>
+        <div class="qMeta">
+          <div id="qCount">Вопрос 1/12</div>
+          <div id="qTag">секретно 🤫</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: QUESTIONS -->
+      <div class="cardInner" id="quizScreen">
+        <h2 class="question" id="questionText"></h2>
+        <div class="answers" id="answers"></div>
+
+        <div class="row">
+          <button class="btn" id="backBtn" type="button">← Назад</button>
+          <button class="btn btnDanger" id="resetBtn" type="button">Сбросить</button>
+        </div>
+
+        <p class="hint" id="hintText">Подсказка: отвечай интуитивно. Это просто игра 😄</p>
+      </div>
+
+      <!-- SCREEN: FINISH -->
+      <div class="finish hidden" id="finishScreen">
+        <h2 class="finishTitle">Конвертик готов ✉️</h2>
+        <div class="small" id="finishMeta"></div>
+
+        <div style="margin-top:12px;">
+          <div class="small" style="margin-bottom:6px;">Комментарий (необязательно)</div>
+          <textarea id="note" placeholder="Напиши пару строк…"></textarea>
+        </div>
+
+        <div class="envList" id="envList"></div>
+
+        <div class="row" style="margin-top:14px;">
+          <button class="btn btnPrimary" id="copyBtn" type="button">Скопировать ответы</button>
+          <button class="btn" id="restartBtn" type="button">Пройти ещё раз</button>
+        </div>
+
+        <div class="tgTip">
+          <b>Как отправить в Telegram:</b><br/>
+          1) Нажми <b>“Скопировать ответы”</b><br/>
+          2) Открой чат с парнем в Telegram<br/>
+          3) Вставь (долгое нажатие → “Вставить”) и отправь 💙
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+  </div>
+
+  <script>
+    const QUESTIONS = [
+      { tag: "Ночёвка", q: "Хочешь ночевать не дома (если найдём классное место)?", a: ["Домой вечером", "Одна ночь", "Зависит от места"] },
+      { tag: "Темп", q: "Какой темп дня тебе приятнее?", a: ["Расслабон (минимум перемещений)", "Смешанный (чил + чуть активностей)", "Приключение (движ, мне ок)"] },
+      { tag: "SPA", q: "SPA вообще хочется?", a: ["Очень хочу (must)", "Норм, если будет", "Не хочу / не люблю"] },
+      { tag: "SPA-тип", q: "Что из SPA больше твоё?", a: ["Бассейн/термы", "Хаммам/сауны", "Массаж", "Просто полежать + чай"] },
+      { tag: "Природа", q: "Животные / природа — заходит?", a: ["Да! хочу", "Можно, но недолго", "Не надо"] },
+      { tag: "Лошади", q: "Как насчёт лошадей?", a: ["Хочу прогулку/покататься", "Только посмотреть/фото", "Не моё"] },
+      { tag: "Дорога", q: "Сколько ехать из Москвы — ок?", a: ["До 1 часа", "До 2 часов", "Хоть дальше, если топ"] },
+      { tag: "Ужин", q: "Вечером что больше хочется?", a: ["Готовить вместе дома", "Заказать / готовое", "Ресторан/куда-то выйти", "Сюрприз — решай ты"] },
+      { tag: "Еда", q: "Стиль еды на вечер?", a: ["Лёгкое и красивое", "Сытное и вкусное", "Домашнее уютное", "Без алкоголя"] },
+      { tag: "Романтика", q: "Какая “романтика” ближе?", a: ["Тихо и камерно", "Вау-эффект/красиво", "Игриво и смешно"] },
+      { tag: "Бюджет", q: "Как по бюджету комфортнее?", a: ["Скромно", "Комфортно", "Можно размахнуться"] },
+      { tag: "Стоп-слово", q: "Что ТОЧНО не хочется в этот день?", a: ["Толпы", "Долгая дорога", "Холод/улица", "SPA", "Животные", "Ресторан", "Готовка"] }
+    ];
+
+    const state = {
+      idx: 0,
+      answers: Array(QUESTIONS.length).fill(null),
+      startedAt: new Date().toISOString()
+    };
+
+    const el = (id) => document.getElementById(id);
+
+    const questionText = el("questionText");
+    const answersBox = el("answers");
+    const qCount = el("qCount");
+    const qTag = el("qTag");
+    const progressFill = el("progressFill");
+    const modePill = el("modePill");
+
+    const quizScreen = el("quizScreen");
+    const finishScreen = el("finishScreen");
+    const envList = el("envList");
+    const finishMeta = el("finishMeta");
+
+    const backBtn = el("backBtn");
+    const resetBtn = el("resetBtn");
+    const copyBtn = el("copyBtn");
+    const restartBtn = el("restartBtn");
+
+    const toast = el("toast");
+
+    function showToast(text){
+      toast.textContent = text;
+      toast.style.display = "block";
+      setTimeout(()=>toast.style.display="none", 1400);
+    }
+
+    function answeredCount(){
+      return state.answers.filter(Boolean).length;
+    }
+
+    function render(){
+      const total = QUESTIONS.length;
+      const qObj = QUESTIONS[state.idx];
+
+      modePill.textContent = "карточки";
+      qCount.textContent = `Вопрос ${state.idx + 1}/${total}`;
+      qTag.textContent = qObj.tag ? qObj.tag : "секретно 🤫";
+
+      const pct = Math.round(((state.idx) / (total)) * 100);
+      progressFill.style.width = `${pct}%`;
+
+      questionText.textContent = qObj.q;
+
+      answersBox.innerHTML = "";
+      qObj.a.forEach((ansText) => {
+        const b = document.createElement("button");
+        b.className = "choice";
+        b.type = "button";
+        const chosen = (state.answers[state.idx] === ansText);
+        b.style.borderColor = chosen ? "rgba(255,77,125,.85)" : "rgba(36,49,74,.9)";
+        b.style.background = chosen ? "rgba(255,77,125,.12)" : "rgba(255,255,255,.04)";
+        b.textContent = ansText;
+
+        b.onclick = () => {
+          state.answers[state.idx] = ansText;
+
+          if (state.idx < total - 1) {
+            state.idx += 1;
+            render();
+          } else {
+            progressFill.style.width = "100%";
+            renderFinish();
+          }
+        };
+
+        answersBox.appendChild(b);
+      });
+
+      backBtn.disabled = state.idx === 0;
+      backBtn.style.opacity = backBtn.disabled ? 0.5 : 1;
+    }
+
+    function renderFinish(){
+      quizScreen.classList.add("hidden");
+      finishScreen.classList.remove("hidden");
+      modePill.textContent = "конверт";
+
+      const total = QUESTIONS.length;
+      const count = answeredCount();
+      finishMeta.textContent = `${count}/${total} ответов • ${new Date().toLocaleString("ru-RU")}`;
+
+      envList.innerHTML = "";
+      QUESTIONS.forEach((q, i) => {
+        const item = document.createElement("div");
+        item.className = "item";
+
+        const pQ = document.createElement("p");
+        pQ.className = "itemQ";
+        pQ.textContent = `${i+1}. ${q.q}`;
+
+        const pA = document.createElement("p");
+        pA.className = "itemA";
+        pA.textContent = `Ответ: ${state.answers[i] || "(не выбрано)"}`;
+
+        item.appendChild(pQ);
+        item.appendChild(pA);
+        envList.appendChild(item);
+      });
+
+      showToast("Готово ✉️");
+      finishScreen.scrollIntoView({ behavior:"smooth", block:"start" });
+    }
+
+    function buildPrettyText(){
+      const note = el("note").value.trim();
+      let text = `💌 Блиц-ответы на 14 февраля\n\n`;
+      if (note) text += `Комментарий:\n${note}\n\n`;
+      text += `Ответы:\n`;
+      QUESTIONS.forEach((q, i) => {
+        text += `${i+1}) [${q.tag}] ${q.q}\n— ${state.answers[i] || "(не выбрано)"}\n\n`;
+      });
+      return text.trim();
+    }
+
+    backBtn.onclick = () => {
+      if (state.idx > 0) { state.idx -= 1; render(); }
+    };
+
+    resetBtn.onclick = () => {
+      if (!confirm("Сбросить ответы?")) return;
+      state.idx = 0;
+      state.answers = Array(QUESTIONS.length).fill(null);
+      quizScreen.classList.remove("hidden");
+      finishScreen.classList.add("hidden");
+      el("note").value = "";
+      render();
+      showToast("Сброшено");
+    };
+
+    copyBtn.onclick = async () => {
+      const text = buildPrettyText();
+      try{
+        await navigator.clipboard.writeText(text);
+        showToast("Скопировано ✅");
+      }catch(e){
+        // fallback
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand("copy");
+        ta.remove();
+        showToast("Скопировано ✅");
+      }
+    };
+
+    restartBtn.onclick = () => {
+      state.idx = 0;
+      state.answers = Array(QUESTIONS.length).fill(null);
+      el("note").value = "";
+      quizScreen.classList.remove("hidden");
+      finishScreen.classList.add("hidden");
+      render();
+      showToast("Поехали заново 🙂");
+    };
+
+    // init
+    render();
+  </script>
+</body>
+</html>
