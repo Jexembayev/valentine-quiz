@@ -34,12 +34,13 @@
       padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted);
     }
     .card{
-      background: rgba(18,26,41,.88);
-      border:1px solid rgba(36,49,74,.9);
-      border-radius:20px;
-      box-shadow: 0 20px 60px rgba(0,0,0,.35);
-      overflow:hidden;
-    }
+  background: color-mix(in srgb, var(--card) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  border-radius:20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  overflow:hidden;
+}
+
     .progressWrap{ padding:14px 18px 0 18px; }
     .progressBar{
       height:10px; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid rgba(36,49,74,.8);
