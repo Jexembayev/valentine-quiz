@@ -4,146 +4,272 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Блиц-игра 💌</title>
+
   <style>
-    :root {
-  --bg:#180a12;      /* фон */
-  --card:#2a0f1e;    /* карточка */
-  --muted:#f2b7c9;   /* вторичный текст */
-  --text:#fff0f6;    /* основной текст */
-  --accent:#ff4d8d;  /* акцент (кнопки/прогресс) */
-  --line:#5a1c38;    /* линии/бордеры */}
+    :root{
+      --bg:#170810;         /* основной фон */
+      --bg2:#2b0d1b;        /* второй тон */
+      --card:#2a0f1e;       /* карточка */
+      --line:#5a1c38;       /* линии/бордеры */
+      --muted:#f2b7c9;      /* вторичный текст */
+      --text:#fff0f6;       /* основной текст */
+      --accent:#ff4d8d;     /* акцент */
+      --accent2:#ffd1dc;    /* второй акцент */
+      --shadow: rgba(0,0,0,.35);
+    }
+
     *{ box-sizing:border-box; }
+
     body{
-      margin:0; font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Arial,sans-serif;
-      background:radial-gradient(900px 600px at 20% 0%, rgba(255,77,141,.35) 0%, rgba(24,10,18,1) 55%) fixed;
-      color:var(--text); min-height:100vh; display:flex; align-items:center; justify-content:center; padding:24px;
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Inter,Roboto,Arial,sans-serif;
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:24px;
+
+      /* романтичный фон */
+      background:
+        radial-gradient(900px 600px at 18% 0%, rgba(255,77,141,.35) 0%, rgba(23,8,16,1) 58%) fixed,
+        radial-gradient(700px 520px at 90% 80%, rgba(255,209,220,.18) 0%, rgba(23,8,16,0) 60%) fixed;
     }
+
+    /* лёгкие “искры/сердечки” на фоне */
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      opacity:.22;
+      background-image:
+        radial-gradient(circle at 12% 18%, rgba(255,255,255,.10) 0 2px, transparent 3px),
+        radial-gradient(circle at 78% 22%, rgba(255,255,255,.10) 0 2px, transparent 3px),
+        radial-gradient(circle at 30% 72%, rgba(255,255,255,.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 88% 78%, rgba(255,255,255,.08) 0 2px, transparent 3px),
+        radial-gradient(circle at 55% 45%, rgba(255,209,220,.10) 0 2px, transparent 3px);
+      background-size: 220px 220px;
+      filter: blur(.2px);
+    }
+
     .app{ width:min(720px,100%); }
-    .top{ display:flex; gap:12px; align-items:center; justify-content:space-between; margin-bottom:14px; }
-    .brand{ display:flex; gap:10px; align-items:center; }
+
+    .top{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      margin-bottom:14px;
+    }
+
+    .brand{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+
     .heart{
-      width:36px; height:36px; border-radius:12px;
-      background: linear-gradient(135deg, #ff4d7d, #ffb86b);
-      display:grid; place-items:center; box-shadow:0 10px 30px rgba(255,77,125,.25);
+      width:38px; height:38px;
+      border-radius:14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display:grid;
+      place-items:center;
+      box-shadow:0 12px 34px rgba(255,77,141,.26);
       font-size:18px;
+      border:1px solid rgba(255,255,255,.10);
     }
-    .title{ font-weight:800; letter-spacing:.2px; }
+
+    .title{ font-weight:900; letter-spacing:.2px; }
     .subtitle{ color:var(--muted); font-size:13px; margin-top:2px; }
+
     .pill{
-      border:1px solid var(--line); background: rgba(255,255,255,.04);
-      padding:8px 10px; border-radius:999px; font-size:12px; color:var(--muted);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.06);
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:12px;
+      color:var(--muted);
+      backdrop-filter: blur(6px);
     }
+
     .card{
-  background: color-mix(in srgb, var(--card) 88%, transparent);
-  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
-  border-radius:20px;
-  box-shadow: 0 20px 60px rgba(0,0,0,.35);
-  overflow:hidden;
-}
+      background: rgba(42,15,30,.88);
+      border:1px solid rgba(90,28,56,.90);
+      border-radius:22px;
+      box-shadow: 0 20px 60px var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
 
     .progressWrap{ padding:14px 18px 0 18px; }
+
     .progressBar{
-      height:10px; border-radius:999px; background: rgba(255,255,255,.06); border:1px solid rgba(36,49,74,.8);
+      height:10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
       overflow:hidden;
     }
+
     .progressFill{
-      height:100%; width:0%;
-      background: linear-gradient(90deg, var(--accent), #ffb86b);
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
       border-radius:999px;
       transition: width .35s ease;
     }
+
     .qMeta{
-      display:flex; gap:10px; align-items:center; justify-content:space-between; margin:14px 0 6px;
-      color:var(--muted); font-size:12px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      margin:14px 0 6px;
+      color:var(--muted);
+      font-size:12px;
     }
+
     .cardInner{ padding:18px; }
-    .question{ font-size:18px; font-weight:800; line-height:1.25; margin:0 0 12px; }
+
+    .question{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.25;
+      margin:0 0 12px;
+      text-shadow: 0 1px 0 rgba(0,0,0,.25);
+    }
+
     .answers{ display:grid; gap:10px; }
+
     button.choice{
-      width:100%; text-align:left;
+      width:100%;
+      text-align:left;
       padding:12px 12px;
-      border-radius:14px;
-      background: rgba(255,255,255,.04);
-      border:1px solid rgba(36,49,74,.9);
+      border-radius:16px;
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.10);
       color:var(--text);
       font-size:14px;
       cursor:pointer;
       transition: transform .06s ease, background .2s ease, border-color .2s ease;
     }
-    button.choice:hover{ background: rgba(255,255,255,.07); }
+    button.choice:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,209,220,.35);
+    }
     button.choice:active{ transform: translateY(1px); }
-    .row{ display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:14px;
+    }
+
     .btn{
-      border:1px solid rgba(36,49,74,.9);
-      background: rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
       color:var(--text);
-      padding:10px 12px; border-radius:14px; cursor:pointer; font-weight:700; font-size:13px;
-      transition: background .2s ease, transform .06s ease;
+      padding:10px 12px;
+      border-radius:16px;
+      cursor:pointer;
+      font-weight:800;
+      font-size:13px;
+      transition: background .2s ease, transform .06s ease, border-color .2s ease;
     }
-    .btn:hover{ background: rgba(255,255,255,.07); }
+    .btn:hover{
+      background: rgba(255,255,255,.08);
+      border-color: rgba(255,209,220,.30);
+    }
     .btn:active{ transform: translateY(1px); }
-    .btnDanger{ border-color: rgba(255,77,125,.45); color: #ff9ab2; }
-    .btnPrimary{
-      background: linear-gradient(135deg, #ff4d7d, #ffb86b);
-      border:0;
-      color:#1a0d12;
-      box-shadow: 0 16px 40px rgba(255,77,125,.25);
+
+    .btnDanger{
+      border-color: rgba(255,77,141,.35);
+      color: #ffd1dc;
     }
-    .hint{ color:var(--muted); font-size:12px; line-height:1.4; margin:10px 0 0; }
+
+    .btnPrimary{
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      border:0;
+      color:#2a0f1e;
+      box-shadow: 0 16px 40px rgba(255,77,141,.24);
+    }
+    .btnPrimary:hover{ filter: brightness(1.03); }
+
+    .hint{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+      margin:10px 0 0;
+    }
+
     .hidden{ display:none !important; }
 
     /* Finish / envelope */
-    .finish{
-      padding:18px;
+    .finish{ padding:18px; }
+
+    .finishTitle{
+      font-size:18px;
+      font-weight:950;
+      margin:0 0 8px;
     }
-    .finishTitle{ font-size:18px; font-weight:900; margin:0 0 8px; }
+
     textarea{
-      width:100%; min-height:90px; resize:vertical;
-      border-radius:14px; padding:10px 12px;
-      border:1px solid rgba(36,49,74,.9);
-      background: rgba(255,255,255,.03); color:var(--text);
-      outline:none;
-    }
-    .envList{ margin:12px 0 0; display:grid; gap:10px; }
-    .item{
-      border:1px dashed rgba(142,160,183,.35);
-      background: rgba(255,255,255,.03);
+      width:100%;
+      min-height:90px;
+      resize:vertical;
       border-radius:16px;
       padding:10px 12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
     }
-    .itemQ{ font-size:13px; font-weight:800; margin:0 0 4px; }
+    textarea:focus{
+      border-color: rgba(255,209,220,.40);
+      box-shadow: 0 0 0 4px rgba(255,77,141,.12);
+    }
+
+    .envList{ margin:12px 0 0; display:grid; gap:10px; }
+
+    .item{
+      border:1px dashed rgba(255,209,220,.28);
+      background: rgba(255,255,255,.03);
+      border-radius:18px;
+      padding:10px 12px;
+    }
+    .itemQ{ font-size:13px; font-weight:900; margin:0 0 4px; }
     .itemA{ font-size:13px; color:var(--muted); margin:0; }
+
     .small{ font-size:12px; color:var(--muted); }
+
     .toast{
-      position:fixed; left:50%; bottom:18px; transform:translateX(-50%);
-      background: rgba(18,26,41,.95); border:1px solid rgba(36,49,74,.9); color:var(--text);
-      padding:10px 12px; border-radius:14px; font-size:13px; display:none;
-      box-shadow: 0 18px 40px rgba(0,0,0,.35);
+      position:fixed;
+      left:50%;
+      bottom:18px;
+      transform:translateX(-50%);
+      background: rgba(42,15,30,.95);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:16px;
+      font-size:13px;
+      display:none;
+      box-shadow: 0 18px 40px var(--shadow);
+      backdrop-filter: blur(10px);
     }
+
     .tgTip{
       margin-top:10px;
       padding:10px 12px;
-      border-radius:14px;
-      border:1px solid rgba(36,49,74,.9);
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.18);
       color:var(--muted);
       font-size:12px;
       line-height:1.45;
     }
-    body::before{
-  content:"";
-  position:fixed;
-  inset:0;
-  pointer-events:none;
-  opacity:.20;
-  background-image:
-    radial-gradient(circle at 12% 18%, rgba(255,255,255,.10) 0 2px, transparent 3px),
-    radial-gradient(circle at 78% 22%, rgba(255,255,255,.10) 0 2px, transparent 3px),
-    radial-gradient(circle at 30% 72%, rgba(255,255,255,.08) 0 2px, transparent 3px),
-    radial-gradient(circle at 88% 78%, rgba(255,255,255,.08) 0 2px, transparent 3px);
-  background-size: 220px 220px;
-  filter: blur(.2px);
-}
   </style>
 </head>
 
@@ -151,7 +277,7 @@
   <div class="app">
     <div class="top">
       <div class="brand">
-        <div class="heart">💌</div>
+        <div class="heart">💘</div>
         <div>
           <div class="title">Блиц-игра на 14 февраля</div>
           <div class="subtitle">Выбирай варианты — конверт появится в конце</div>
@@ -282,9 +408,12 @@
         const b = document.createElement("button");
         b.className = "choice";
         b.type = "button";
+
         const chosen = (state.answers[state.idx] === ansText);
-        b.style.borderColor = chosen ? "rgba(255,77,125,.85)" : "rgba(36,49,74,.9)";
-        b.style.background = chosen ? "rgba(255,77,125,.12)" : "rgba(255,255,255,.04)";
+
+        // подсветка выбора (розовая)
+        b.style.borderColor = chosen ? "rgba(255,77,141,.75)" : "rgba(255,255,255,.10)";
+        b.style.background  = chosen ? "rgba(255,77,141,.14)" : "rgba(255,255,255,.05)";
         b.textContent = ansText;
 
         b.onclick = () => {
@@ -369,7 +498,6 @@
         await navigator.clipboard.writeText(text);
         showToast("Скопировано ✅");
       }catch(e){
-        // fallback
         const ta = document.createElement("textarea");
         ta.value = text;
         document.body.appendChild(ta);
@@ -390,7 +518,6 @@
       showToast("Поехали заново 🙂");
     };
 
-    // init
     render();
   </script>
 </body>
